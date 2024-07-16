@@ -32,8 +32,7 @@ import (
 	"unsafe"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/klauspost/compress/snappy"
-	"github.com/klauspost/compress/zstd"
+	"github.com/golang/snappy"
 	"github.com/pkg/errors"
 
 	"github.com/ze6ra/badgerz/fb"
@@ -77,8 +76,8 @@ type Options struct {
 	Compression options.CompressionType
 
 	// Block cache is used to cache decompressed and decrypted blocks.
-	BlockCache *ristretto.Cache[[]byte, *Block]
-	IndexCache *ristretto.Cache[uint64, *fb.TableIndex]
+	BlockCache *ristretto.Cache
+	IndexCache *ristretto.Cache
 
 	AllocPool *z.AllocatorPool
 
@@ -178,11 +177,13 @@ func (t *Table) DecrRef() error {
 }
 
 // BlockEvictHandler is used to reuse the byte slice stored in the block on cache eviction.
-func BlockEvictHandler(b *Block) {
-	b.decrRef()
+func BlockEvictHandler(value interface{}) {
+	if b, ok := value.(*block); ok {
+		b.decrRef()
+	}
 }
 
-type Block struct {
+type block struct {
 	offset            int
 	data              []byte
 	checksum          []byte
@@ -197,7 +198,7 @@ var NumBlocks atomic.Int32
 
 // incrRef increments the ref of a block and return a bool indicating if the
 // increment was successful. A true value indicates that the block can be used.
-func (b *Block) incrRef() bool {
+func (b *block) incrRef() bool {
 	for {
 		// We can't blindly add 1 to ref. We need to check whether it has
 		// reached zero first, because if it did, then we should absolutely not
@@ -220,7 +221,7 @@ func (b *Block) incrRef() bool {
 		}
 	}
 }
-func (b *Block) decrRef() {
+func (b *block) decrRef() {
 	if b == nil {
 		return
 	}
@@ -240,12 +241,12 @@ func (b *Block) decrRef() {
 	}
 	y.AssertTrue(b.ref.Load() >= 0)
 }
-func (b *Block) size() int64 {
+func (b *block) size() int64 {
 	return int64(3*intSize /* Size of the offset, entriesIndexStart and chkLen */ +
 		cap(b.data) + cap(b.checksum) + cap(b.entryOffsets)*4)
 }
 
-func (b *Block) verifyCheckSum() error {
+func (b *block) verifyCheckSum() error {
 	cs := &pb.Checksum{}
 	if err := proto.Unmarshal(b.checksum, cs); err != nil {
 		return y.Wrapf(err, "unable to unmarshal checksum for block")
@@ -519,7 +520,7 @@ func (t *Table) fetchIndex() *fb.TableIndex {
 		panic("Index Cache must be set for encrypted workloads")
 	}
 	if val, ok := t.opt.IndexCache.Get(t.indexKey()); ok && val != nil {
-		return val
+		return val.(*fb.TableIndex)
 	}
 
 	index, err := t.readTableIndex()
@@ -535,7 +536,7 @@ func (t *Table) offsets(ko *fb.BlockOffset, i int) bool {
 // block function return a new block. Each block holds a ref and the byte
 // slice stored in the block will be reused when the ref becomes zero. The
 // caller should release the block by calling block.decrRef() on it.
-func (t *Table) block(idx int, useCache bool) (*Block, error) {
+func (t *Table) block(idx int, useCache bool) (*block, error) {
 	y.AssertTruef(idx >= 0, "idx=%d", idx)
 	if idx >= t.offsetsLength() {
 		return nil, errors.New("block out of index")
@@ -547,15 +548,15 @@ func (t *Table) block(idx int, useCache bool) (*Block, error) {
 			// Use the block only if the increment was successful. The block
 			// could get evicted from the cache between the Get() call and the
 			// incrRef() call.
-			if blk.incrRef() {
-				return blk, nil
+			if b := blk.(*block); b.incrRef() {
+				return b, nil
 			}
 		}
 	}
 
 	var ko fb.BlockOffset
 	y.AssertTrue(t.offsets(&ko, idx))
-	blk := &Block{offset: int(ko.Offset())}
+	blk := &block{offset: int(ko.Offset())}
 	blk.ref.Store(1)
 	defer blk.decrRef() // Deal with any errors, where blk would not be returned.
 	NumBlocks.Add(1)
@@ -793,7 +794,7 @@ func NewFilename(id uint64, dir string) string {
 }
 
 // decompress decompresses the data stored in a block.
-func (t *Table) decompress(b *Block) error {
+func (t *Table) decompress(b *block) error {
 	var dst []byte
 	var err error
 
@@ -817,11 +818,6 @@ func (t *Table) decompress(b *Block) error {
 		}
 	case options.ZSTD:
 		sz := int(float64(t.opt.BlockSize) * 1.2)
-		// Get frame content size from header.
-		var hdr zstd.Header
-		if err := hdr.Decode(b.data); err == nil && hdr.HasFCS && hdr.FrameContentSize < uint64(t.opt.BlockSize*2) {
-			sz = int(hdr.FrameContentSize)
-		}
 		dst = z.Calloc(sz, "Table.Decompress")
 		b.data, err = y.ZSTDDecompress(dst, b.data)
 		if err != nil {

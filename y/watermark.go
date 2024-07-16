@@ -228,8 +228,7 @@ func (w *WaterMark) process(closer *z.Closer) {
 					}
 				}
 			} else {
-				// it is possible that mark.index is zero. We need to handle that case as well.
-				if mark.index > 0 || (mark.index == 0 && len(mark.indices) == 0) {
+				if mark.index > 0 {
 					processOne(mark.index, mark.done)
 				}
 				for _, index := range mark.indices {

@@ -34,7 +34,6 @@ import (
 	humanize "github.com/dustin/go-humanize"
 	"github.com/pkg/errors"
 
-	"github.com/ze6ra/badgerz/fb"
 	"github.com/ze6ra/badgerz/options"
 	"github.com/ze6ra/badgerz/pb"
 	"github.com/ze6ra/badgerz/skl"
@@ -124,8 +123,8 @@ type DB struct {
 
 	pub        *publisher
 	registry   *KeyRegistry
-	blockCache *ristretto.Cache[[]byte, *table.Block]
-	indexCache *ristretto.Cache[uint64, *fb.TableIndex]
+	blockCache *ristretto.Cache
+	indexCache *ristretto.Cache
 	allocPool  *z.AllocatorPool
 }
 
@@ -163,7 +162,7 @@ func checkAndSetOptions(opt *Options) error {
 	// the transaction APIs. Transaction batches entries into batches of size opt.maxBatchSize.
 	if opt.ValueThreshold > opt.maxBatchSize {
 		return errors.Errorf("Valuethreshold %d greater than max batch size of %d. Either "+
-			"reduce opt.ValueThreshold or increase opt.BaseTableSize.",
+			"reduce opt.ValueThreshold or increase opt.MaxTableSize.",
 			opt.ValueThreshold, opt.maxBatchSize)
 	}
 	// ValueLogFileSize should be stricly LESS than 2<<30 otherwise we will
@@ -275,14 +274,14 @@ func Open(opt Options) (*DB, error) {
 			numInCache = 1
 		}
 
-		config := ristretto.Config[[]byte, *table.Block]{
+		config := ristretto.Config{
 			NumCounters: numInCache * 8,
 			MaxCost:     opt.BlockCacheSize,
 			BufferItems: 64,
 			Metrics:     true,
 			OnExit:      table.BlockEvictHandler,
 		}
-		db.blockCache, err = ristretto.NewCache[[]byte, *table.Block](&config)
+		db.blockCache, err = ristretto.NewCache(&config)
 		if err != nil {
 			return nil, y.Wrap(err, "failed to create data cache")
 		}
@@ -298,7 +297,7 @@ func Open(opt Options) (*DB, error) {
 			numInCache = 1
 		}
 
-		config := ristretto.Config[uint64, *fb.TableIndex]{
+		config := ristretto.Config{
 			NumCounters: numInCache * 8,
 			MaxCost:     opt.IndexCacheSize,
 			BufferItems: 64,
@@ -1618,7 +1617,7 @@ func (db *DB) Flatten(workers int) error {
 			}
 		}
 		if len(levels) <= 1 {
-			prios := db.lc.pickCompactLevels(nil)
+			prios := db.lc.pickCompactLevels()
 			if len(prios) == 0 || prios[0].score <= 1.0 {
 				db.opt.Infof("All tables consolidated into one level. Flattening done.\n")
 				return nil

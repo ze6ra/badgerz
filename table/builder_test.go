@@ -38,7 +38,7 @@ func TestTableIndex(t *testing.T) {
 	key := make([]byte, 32)
 	_, err := rand.Read(key)
 	require.NoError(t, err)
-	cache, err := ristretto.NewCache[uint64, *fb.TableIndex](&ristretto.Config[uint64, *fb.TableIndex]{
+	cache, err := ristretto.NewCache(&ristretto.Config{
 		NumCounters: 1000,
 		MaxCost:     1 << 20,
 		BufferItems: 64,
@@ -178,15 +178,12 @@ func BenchmarkBuilder(b *testing.B) {
 		opt.BlockSize = 4 * 1024
 		opt.BloomFalsePositive = 0.01
 		opt.TableSize = 5 << 20
-
 		b.ResetTimer()
-		b.ReportAllocs()
 		for i := 0; i < b.N; i++ {
 			builder := NewTableBuilder(*opt)
 			for j := 0; j < keysCount; j++ {
 				builder.Add(keyList[j], vs, 0)
 			}
-
 			_ = builder.Finish()
 			builder.Close()
 		}
@@ -199,7 +196,7 @@ func BenchmarkBuilder(b *testing.B) {
 	})
 	b.Run("encryption", func(b *testing.B) {
 		var opt Options
-		cache, err := ristretto.NewCache(&ristretto.Config[uint64, *fb.TableIndex]{
+		cache, err := ristretto.NewCache(&ristretto.Config{
 			NumCounters: 1000,
 			MaxCost:     1 << 20,
 			BufferItems: 64,
@@ -209,11 +206,6 @@ func BenchmarkBuilder(b *testing.B) {
 		key := make([]byte, 32)
 		rand.Read(key)
 		opt.DataKey = &pb.DataKey{Data: key}
-		bench(b, &opt)
-	})
-	b.Run("snappy compression", func(b *testing.B) {
-		var opt Options
-		opt.Compression = options.Snappy
 		bench(b, &opt)
 	})
 	b.Run("zstd compression", func(b *testing.B) {

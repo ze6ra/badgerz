@@ -25,8 +25,8 @@ import (
 	"unsafe"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/golang/snappy"
 	fbs "github.com/google/flatbuffers/go"
-	"github.com/klauspost/compress/s2"
 	"github.com/pkg/errors"
 
 	"github.com/ze6ra/badgerz/fb"
@@ -159,7 +159,7 @@ func NewTableBuilder(opts Options) *Builder {
 func maxEncodedLen(ctype options.CompressionType, sz int) int {
 	switch ctype {
 	case options.Snappy:
-		return s2.MaxEncodedLen(sz)
+		return snappy.MaxEncodedLen(sz)
 	case options.ZSTD:
 		return y.ZSTDCompressBound(sz)
 	}
@@ -523,9 +523,9 @@ func (b *Builder) compressData(data []byte) ([]byte, error) {
 	case options.None:
 		return data, nil
 	case options.Snappy:
-		sz := s2.MaxEncodedLen(len(data))
+		sz := snappy.MaxEncodedLen(len(data))
 		dst := b.alloc.Allocate(sz)
-		return s2.EncodeSnappy(dst, data), nil
+		return snappy.Encode(dst, data), nil
 	case options.ZSTD:
 		sz := y.ZSTDCompressBound(len(data))
 		dst := b.alloc.Allocate(sz)
