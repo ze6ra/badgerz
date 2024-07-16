@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/ze6ra/badgerz/y"
-	"github.com/dgraph-io/ristretto/z"
+	"github.com/ze6ra/ristretto/z"
 )
 
 func val(large bool) []byte {

@@ -29,7 +29,7 @@ import (
 	"github.com/ze6ra/badgerz/options"
 	"github.com/ze6ra/badgerz/pb"
 	"github.com/ze6ra/badgerz/y"
-	"github.com/dgraph-io/ristretto"
+	"github.com/ze6ra/ristretto"
 )
 
 func TestTableIndex(t *testing.T) {

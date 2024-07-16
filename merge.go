@@ -23,7 +23,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/ze6ra/badgerz/y"
-	"github.com/dgraph-io/ristretto/z"
+	"github.com/ze6ra/ristretto/z"
 )
 
 // MergeOperator represents a Badger merge operator.

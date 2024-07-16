@@ -29,7 +29,7 @@ import (
 	"github.com/ze6ra/badgerz/options"
 	"github.com/ze6ra/badgerz/table"
 	"github.com/ze6ra/badgerz/y"
-	"github.com/dgraph-io/ristretto/z"
+	"github.com/ze6ra/ristretto/z"
 )
 
 // Note: If you add a new option X make sure you also add a WithX method on Options.

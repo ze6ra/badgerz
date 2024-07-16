@@ -21,7 +21,7 @@ import (
 	"context"
 	"sync/atomic"
 
-	"github.com/dgraph-io/ristretto/z"
+	"github.com/ze6ra/ristretto/z"
 )
 
 type uint64Heap []uint64

@@ -38,7 +38,7 @@ import (
 	"github.com/ze6ra/badgerz/pb"
 	"github.com/ze6ra/badgerz/skl"
 	"github.com/ze6ra/badgerz/y"
-	"github.com/dgraph-io/ristretto/z"
+	"github.com/ze6ra/ristretto/z"
 )
 
 // memTable structure stores a skiplist and a corresponding WAL. Writes to memTable are written

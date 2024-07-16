@@ -26,7 +26,7 @@ import (
 	"go.opencensus.io/zpages"
 
 	"github.com/ze6ra/badgerz/badger/cmd"
-	"github.com/dgraph-io/ristretto/z"
+	"github.com/ze6ra/ristretto/z"
 )
 
 func main() {

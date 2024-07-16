@@ -39,7 +39,7 @@ import (
 	"github.com/ze6ra/badgerz/pb"
 	"github.com/ze6ra/badgerz/table"
 	"github.com/ze6ra/badgerz/y"
-	"github.com/dgraph-io/ristretto/z"
+	"github.com/ze6ra/ristretto/z"
 )
 
 func TestTruncateVlogWithClose(t *testing.T) {

@@ -39,8 +39,8 @@ import (
 	"github.com/ze6ra/badgerz/skl"
 	"github.com/ze6ra/badgerz/table"
 	"github.com/ze6ra/badgerz/y"
-	"github.com/dgraph-io/ristretto"
-	"github.com/dgraph-io/ristretto/z"
+	"github.com/ze6ra/ristretto"
+	"github.com/ze6ra/ristretto/z"
 )
 
 var (

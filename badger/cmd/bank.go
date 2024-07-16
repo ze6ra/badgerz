@@ -35,7 +35,7 @@ import (
 	"github.com/ze6ra/badgerz"
 	"github.com/ze6ra/badgerz/pb"
 	"github.com/ze6ra/badgerz/y"
-	"github.com/dgraph-io/ristretto/z"
+	"github.com/ze6ra/ristretto/z"
 )
 
 var testCmd = &cobra.Command{
