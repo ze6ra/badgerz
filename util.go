@@ -24,8 +24,8 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/dgraph-io/badger/v4/table"
-	"github.com/dgraph-io/badger/v4/y"
+	"github.com/ze6ra/badgerz/table"
+	"github.com/ze6ra/badgerz/y"
 )
 
 func (s *levelsController) validate() error {

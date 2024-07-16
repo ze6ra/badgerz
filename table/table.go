@@ -36,10 +36,10 @@ import (
 	"github.com/klauspost/compress/zstd"
 	"github.com/pkg/errors"
 
-	"github.com/dgraph-io/badger/v4/fb"
-	"github.com/dgraph-io/badger/v4/options"
-	"github.com/dgraph-io/badger/v4/pb"
-	"github.com/dgraph-io/badger/v4/y"
+	"github.com/ze6ra/badgerz/fb"
+	"github.com/ze6ra/badgerz/options"
+	"github.com/ze6ra/badgerz/pb"
+	"github.com/ze6ra/badgerz/y"
 	"github.com/dgraph-io/ristretto"
 	"github.com/dgraph-io/ristretto/z"
 )

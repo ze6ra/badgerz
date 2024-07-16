@@ -25,8 +25,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dgraph-io/badger/v4/table"
-	"github.com/dgraph-io/badger/v4/y"
+	"github.com/ze6ra/badgerz/table"
+	"github.com/ze6ra/badgerz/y"
 	"github.com/dgraph-io/ristretto/z"
 )
 

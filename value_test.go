@@ -30,7 +30,7 @@ import (
 	humanize "github.com/dustin/go-humanize"
 	"github.com/stretchr/testify/require"
 
-	"github.com/dgraph-io/badger/v4/y"
+	"github.com/ze6ra/badgerz/y"
 )
 
 func TestDynamicValueThreshold(t *testing.T) {

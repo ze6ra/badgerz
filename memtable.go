@@ -35,9 +35,9 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/dgraph-io/badger/v4/pb"
-	"github.com/dgraph-io/badger/v4/skl"
-	"github.com/dgraph-io/badger/v4/y"
+	"github.com/ze6ra/badgerz/pb"
+	"github.com/ze6ra/badgerz/skl"
+	"github.com/ze6ra/badgerz/y"
 	"github.com/dgraph-io/ristretto/z"
 )
 

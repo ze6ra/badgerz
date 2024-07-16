@@ -30,10 +30,10 @@ import (
 	"github.com/stretchr/testify/require"
 	otrace "go.opencensus.io/trace"
 
-	"github.com/dgraph-io/badger/v4/options"
-	"github.com/dgraph-io/badger/v4/pb"
-	"github.com/dgraph-io/badger/v4/table"
-	"github.com/dgraph-io/badger/v4/y"
+	"github.com/ze6ra/badgerz/options"
+	"github.com/ze6ra/badgerz/pb"
+	"github.com/ze6ra/badgerz/table"
+	"github.com/ze6ra/badgerz/y"
 )
 
 func TestManifestBasic(t *testing.T) {

@@ -23,7 +23,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/dgraph-io/badger/v4"
+	"github.com/ze6ra/badgerz"
 )
 
 var bo = struct {

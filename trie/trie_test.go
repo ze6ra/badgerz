@@ -22,7 +22,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/dgraph-io/badger/v4/pb"
+	"github.com/ze6ra/badgerz/pb"
 )
 
 func TestGet(t *testing.T) {

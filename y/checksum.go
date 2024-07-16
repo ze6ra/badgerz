@@ -22,7 +22,7 @@ import (
 	"github.com/cespare/xxhash/v2"
 	"github.com/pkg/errors"
 
-	"github.com/dgraph-io/badger/v4/pb"
+	"github.com/ze6ra/badgerz/pb"
 )
 
 // ErrChecksumMismatch is returned at checksum mismatch.

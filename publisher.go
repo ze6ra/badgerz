@@ -20,9 +20,9 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/dgraph-io/badger/v4/pb"
-	"github.com/dgraph-io/badger/v4/trie"
-	"github.com/dgraph-io/badger/v4/y"
+	"github.com/ze6ra/badgerz/pb"
+	"github.com/ze6ra/badgerz/trie"
+	"github.com/ze6ra/badgerz/y"
 	"github.com/dgraph-io/ristretto/z"
 )
 
