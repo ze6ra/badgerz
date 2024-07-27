@@ -1,6 +1,6 @@
 module github.com/ze6ra/badgerz
 
-go 1.21.11
+go 1.19
 
 require (
 	github.com/cespare/xxhash/v2 v2.3.0
